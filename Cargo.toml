@@ -23,26 +23,26 @@ axum = "0.8"
 tokio = { version = "1.48.0", features = ["full"] }
 
 # HTTP client
-reqwest = { version = "0.12", features = ["rustls-tls", "cookies", "gzip", "brotli", "stream"] }
+reqwest = { version = "0.12", features = ["rustls-tls", "cookies", "gzip", "brotli", "stream", "json"] }
 
 # HTML parsing and conversion
 readability = "0.3"
-scraper = "0.20"
-html2text = "0.12"
+scraper = "0.24"
+html2text = "0.16"
 
 # Metadata and feeds
 webpage = "2.0"
-feed-rs = "2.1"
+feed-rs = "2.3"
 
 # XML
-quick-xml = "0.37"
+quick-xml = "0.38"
 
 # Caching and rate limiting
-cached = { version = "0.53", features = ["async"] }
-governor = "0.7"
+cached = { version = "0.56", features = ["async"] }
+governor = "0.10"
 
 # PDF (optional)
-lopdf = { version = "0.34", optional = true }
+lopdf = { version = "0.38", optional = true }
 
 # Images (optional)
 image = { version = "0.25", optional = true }
@@ -53,6 +53,7 @@ mime_guess = "2.0"
 robotstxt = "0.3"
 encoding_rs = "0.8"
 regex = "1.12"
+urlencoding = "2.1"
 
 # CLI and logging
 clap = { version = "4.5", features = ["derive"] }
@@ -70,7 +71,7 @@ thiserror = "2.0"
 
 # Additional utilities
 futures = "0.3"
-bytes = "1.8"
+bytes = "1.11"
 async-trait = "0.1"
 once_cell = "1.21"
 
