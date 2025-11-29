@@ -21,10 +21,18 @@ All notable changes to fetch-mcp-rs will be documented in this file.
   - PDF max_pages parameter
   - Search total_occurrences and unique_words extraction
   - Link extraction convenience wrappers
+- Comprehensive test suite (60 tests total)
+  - 45 unit tests covering all modules
+  - 4 HTTP transport integration tests
+  - 11 stdio MCP integration tests
+  - All tests run via single `cargo test` command
 
 ### Fixed
 - Removed all 23 unused code warnings by integrating helper functions
 - Updated logging to support both stdio and stream modes correctly
+- Fixed 3 failing unit tests (categorize_image_size, extract_table, html_to_markdown)
+- Fixed extract_table selector bug (headers extraction)
+- Fixed batch_fetch test after BatchFetchResult refactoring
 
 ## [0.1.0] - 2025-01-15
 
