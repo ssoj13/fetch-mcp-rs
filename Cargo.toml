@@ -1,0 +1,85 @@
+[package]
+name = "fetch-mcp-rs"
+version = "0.1.0"
+edition = "2021"
+description = "Advanced Rust MCP server for web content fetching with 11+ tools"
+license = "MIT"
+repository = "https://github.com/ssoj13/fetch-mcp-rs"
+homepage = "https://github.com/ssoj13/fetch-mcp-rs"
+keywords = ["mcp", "fetch", "http", "server", "llm"]
+categories = ["command-line-utilities", "web-programming"]
+readme = "README.md"
+
+[[bin]]
+name = "fetch-mcp-rs"
+path = "src/main.rs"
+
+[dependencies]
+# Core MCP
+rmcp = { version = "0.9.1", features = ["transport-io", "server", "macros", "transport-streamable-http-server"] }
+axum = "0.8"
+
+# Async runtime
+tokio = { version = "1.48.0", features = ["full"] }
+
+# HTTP client
+reqwest = { version = "0.12", features = ["rustls-tls", "cookies", "gzip", "brotli", "stream"] }
+
+# HTML parsing and conversion
+readability = "0.3"
+scraper = "0.20"
+html2text = "0.12"
+
+# Metadata and feeds
+webpage = "2.0"
+feed-rs = "2.1"
+
+# XML
+quick-xml = "0.37"
+
+# Caching and rate limiting
+cached = { version = "0.53", features = ["async"] }
+governor = "0.7"
+
+# PDF (optional)
+lopdf = { version = "0.34", optional = true }
+
+# Images (optional)
+image = { version = "0.25", optional = true }
+
+# Utilities
+url = "2.5"
+mime_guess = "2.0"
+robotstxt = "0.3"
+encoding_rs = "0.8"
+regex = "1.12"
+
+# CLI and logging
+clap = { version = "4.5", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+schemars = { version = "1.1.0", features = ["derive"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "2.0"
+
+# Additional utilities
+futures = "0.3"
+bytes = "1.8"
+async-trait = "0.1"
+once_cell = "1.21"
+
+[dev-dependencies]
+tempfile = "3.23"
+uuid = { version = "1.18", features = ["v4"] }
+
+[features]
+default = ["pdf", "images"]
+pdf = ["dep:lopdf"]
+images = ["dep:image"]
+full = ["pdf", "images"]
