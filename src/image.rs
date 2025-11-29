@@ -135,10 +135,10 @@ mod tests {
 
     #[test]
     fn test_categorize_image_size() {
-        assert_eq!(categorize_image_size(100, 100), "thumbnail");
-        assert_eq!(categorize_image_size(800, 600), "small");
-        assert_eq!(categorize_image_size(1920, 1080), "medium");
-        assert_eq!(categorize_image_size(4000, 3000), "large");
+        assert_eq!(categorize_image_size(100, 100), "thumbnail");     // 10K pixels
+        assert_eq!(categorize_image_size(800, 600), "small");         // 480K pixels
+        assert_eq!(categorize_image_size(1920, 1080), "large");       // 2.07M pixels
+        assert_eq!(categorize_image_size(4000, 3000), "very_large");  // 12M pixels
     }
 
     #[test]

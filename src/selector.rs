@@ -73,7 +73,7 @@ pub fn extract_table(html: &str, table_selector: Option<&str>) -> Result<Vec<Tab
 
     let thead_sel = Selector::parse("thead tr th, thead tr td")
         .map_err(|e| anyhow::anyhow!("Failed to create thead selector: {:?}", e))?;
-    let tbody_sel = Selector::parse("tbody tr, tr")
+    let tbody_sel = Selector::parse("tbody tr")
         .map_err(|e| anyhow::anyhow!("Failed to create tbody selector: {:?}", e))?;
     let cell_sel = Selector::parse("td, th")
         .map_err(|e| anyhow::anyhow!("Failed to create cell selector: {:?}", e))?;
@@ -84,10 +84,7 @@ pub fn extract_table(html: &str, table_selector: Option<&str>) -> Result<Vec<Tab
         // Extract headers
         let headers: Vec<String> = table_element
             .select(&thead_sel)
-            .flat_map(|row| {
-                row.select(&cell_sel)
-                    .map(|cell| cell.text().collect::<Vec<_>>().join(" ").trim().to_string())
-            })
+            .map(|cell| cell.text().collect::<Vec<_>>().join(" ").trim().to_string())
             .collect();
 
         // Extract rows
