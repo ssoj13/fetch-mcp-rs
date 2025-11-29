@@ -51,9 +51,17 @@ struct Cli {
     #[arg(long)]
     log_file: Option<PathBuf>,
 
-    /// Enable HTTP stream mode on specified port (default: stdio mode)
-    #[arg(long)]
-    port: Option<u16>,
+    /// Enable streamable HTTP mode (default: stdio)
+    #[arg(short = 's', long = "stream")]
+    stream_mode: bool,
+
+    /// HTTP port for stream mode
+    #[arg(short = 'p', long, default_value = "8000")]
+    port: u16,
+
+    /// Bind address for stream mode
+    #[arg(short = 'b', long, default_value = "127.0.0.1")]
+    bind: String,
 }
 
 /// Global server state
@@ -736,6 +744,55 @@ impl ServerHandler for FetchServer {
 }
 
 // ============================================================================
+// Transport Mode Functions
+// ============================================================================
+
+/// Run server in stdio mode (default)
+async fn run_stdio_mode(server: FetchServer) -> Result<()> {
+    tracing::debug!("Starting stdio server");
+    let transport = stdio();
+    let svc = server.serve(transport).await?;
+    svc.waiting().await?;
+    Ok(())
+}
+
+/// Run server in streamable HTTP mode
+async fn run_stream_mode(
+    server: FetchServer,
+    bind: &str,
+    port: u16,
+) -> Result<()> {
+    use rmcp::transport::StreamableHttpService;
+    use rmcp::transport::streamable_http_server::session::local::LocalSessionManager;
+
+    let addr = format!("{}:{}", bind, port);
+    tracing::info!("Starting MCP HTTP server on http://{}/mcp", addr);
+
+    // Create service with session management
+    let service = StreamableHttpService::new(
+        move || Ok(server.clone()),
+        LocalSessionManager::default().into(),
+        Default::default(),
+    );
+
+    // Build router with MCP endpoint and health check
+    let router = axum::Router::new()
+        .nest_service("/mcp", service)
+        .route("/health", axum::routing::get(|| async { "OK" }));
+
+    let tcp_listener = tokio::net::TcpListener::bind(&addr).await?;
+
+    // Start server with graceful shutdown
+    axum::serve(tcp_listener, router)
+        .with_graceful_shutdown(async {
+            tokio::signal::ctrl_c().await.ok();
+        })
+        .await?;
+
+    Ok(())
+}
+
+// ============================================================================
 // Main Entry Point
 // ============================================================================
 
@@ -744,7 +801,7 @@ async fn main() -> Result<()> {
     let cli = Cli::parse();
 
     // Determine if running in stream mode
-    let is_stream_mode = cli.port.is_some();
+    let is_stream_mode = cli.stream_mode;
 
     // Initialize logging (no stderr in stdio mode)
     logging::init_logging(cli.log_file.clone(), is_stream_mode);
@@ -775,16 +832,11 @@ async fn main() -> Result<()> {
 
     let server = FetchServer::new(state);
 
-    if let Some(_port) = cli.port {
-        // HTTP Stream mode - TODO: implement when needed
-        tracing::error!("HTTP stream mode not yet implemented");
-        anyhow::bail!("HTTP stream mode not yet implemented");
+    // Run appropriate transport mode
+    if is_stream_mode {
+        run_stream_mode(server, &cli.bind, cli.port).await?;
     } else {
-        // Stdio mode
-        tracing::debug!("Starting stdio server");
-        let transport = stdio();
-        let svc = server.serve(transport).await?;
-        svc.waiting().await?;
+        run_stdio_mode(server).await?;
     }
 
     Ok(())

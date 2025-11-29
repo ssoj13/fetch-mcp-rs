@@ -289,10 +289,10 @@ mod tests {
         assert!(result.is_ok());
 
         let results = result.unwrap();
-        assert_eq!(results.len(), 3);
+        assert_eq!(results.results.len(), 3);
 
         // Check that we got some successes
-        let success_count = results.iter().filter(|r| r.success).count();
+        let success_count = results.results.iter().filter(|r| r.success).count();
         assert!(success_count >= 2);
     }
 
