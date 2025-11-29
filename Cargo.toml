@@ -1,6 +1,6 @@
 [package]
 name = "fetch-mcp-rs"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Advanced Rust MCP server for web content fetching with 11+ tools"
 license = "MIT"
